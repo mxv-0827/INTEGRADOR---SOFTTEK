@@ -1,26 +1,46 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TP_INTEGRADOR.DataAccess.Interface;
 using TP_INTEGRADOR.Entities;
 
 namespace TP_INTEGRADOR.DataAccess.DBSeeders
 {
-    public class WorkSeeder : IEntitySeeder
+    public class WorkSeeder : IEntityTypeConfiguration<Work>
     {
-        public void SeedDB(ModelBuilder modelBuilder)
+        public void Configure(EntityTypeBuilder<Work> builder)
         {
-            Work work = new Work
+            var works = new List<Work>
             {
-                CodWork = 1,
-                Date = DateTime.Now,
-                CodProject = 1,
-                CodService = 1,
-                AmountHours = 35,
-                ValuePerHour = 12,
+                new Work { CodWork = 1, Date = DateTime.Now, CodProject = 4, CodService = 4, AmountHours = 1, ValuePerHour = 5 },
+                new Work { CodWork = 2, Date = DateTime.Now, CodProject = 3, CodService = 3, AmountHours = 2, ValuePerHour = 6 },
+                new Work { CodWork = 3, Date = DateTime.Now, CodProject = 2, CodService = 2, AmountHours = 3, ValuePerHour = 7 },
+                new Work { CodWork = 4, Date = DateTime.Now, CodProject = 1, CodService = 1, AmountHours = 4, ValuePerHour = 8 },
             };
 
-            work.Cost = work.ValuePerHour * work.AmountHours;
+            // Se calcula la propiedad 'cost' para cada objeto Work.
+            foreach (var work in works)
+            {
+                work.Cost = work.AmountHours * work.ValuePerHour;
+            }
 
-            modelBuilder.Entity<Work>().HasData(work);
+            builder.HasData(works);
         }
+
+        //public void SeedDB(ModelBuilder modelBuilder)
+        //{
+        //    Work work = new Work
+        //    {
+        //        CodWork = 1,
+        //        Date = DateTime.Now,
+        //        CodProject = 1,
+        //        CodService = 1,
+        //        AmountHours = 35,
+        //        ValuePerHour = 12,
+        //    };
+
+        //    work.Cost = work.ValuePerHour * work.AmountHours;
+
+        //    modelBuilder.Entity<Work>().HasData(work);
+        //}
     }
 }

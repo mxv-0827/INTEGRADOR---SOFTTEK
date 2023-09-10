@@ -17,17 +17,10 @@ namespace TP_INTEGRADOR.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var seeder = new List<IEntitySeeder> {
-                new UserSeeder(),
-                new ProjectSeeder(),
-                new ServiceSeeder(),
-                new WorkSeeder()
-            };
-
-            seeder.ForEach(seed => seed.SeedDB(modelBuilder));
-
-
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new UserSeeder());
+            modelBuilder.ApplyConfiguration(new ProjectSeeder());
+            modelBuilder.ApplyConfiguration(new ServiceSeeder());
+            modelBuilder.ApplyConfiguration(new WorkSeeder());
         }
     }
 }

@@ -14,6 +14,7 @@ namespace TP_INTEGRADOR.Entities
         public string Name { get; set; }
 
         [Required]
+        [MaxLength(8)]
         [Column ("DNI")]
         public int DNI { get; set; }
 

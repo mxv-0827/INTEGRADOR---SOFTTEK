@@ -19,6 +19,6 @@ namespace TP_INTEGRADOR.Entities
 
         [Required]
         [Column ("State")]
-        public bool State { get; set; }
+        public int State { get; set; }
     }
 }
