@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TP_INTEGRADOR.DataAccess;
+using TP_INTEGRADOR.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer("name=DefaultConnection");
 });
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWorkService>();
 
 var app = builder.Build();
 

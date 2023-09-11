@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata;
+using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
 {
@@ -7,18 +10,20 @@ namespace TP_INTEGRADOR.Controllers
     [ApiController]
     public class WorkController : ControllerBase
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+
+        public WorkController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+
         [HttpGet]
         [Route("/getAllWorks")]
-        public IActionResult GetAllWorks()
+        public async Task<ActionResult<IEnumerable<Work>>> GetAllWorks()
         {
-            try
-            {
-                return Ok("Trabajos obtenidos");
-            }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+            return await _unitOfWork.WorkRepository.GetAll();
         }
 
         [HttpGet]

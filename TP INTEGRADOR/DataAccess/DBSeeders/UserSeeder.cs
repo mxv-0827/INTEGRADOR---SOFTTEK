@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TP_INTEGRADOR.DataAccess.Interface;
 using TP_INTEGRADOR.Entities;
 
 namespace TP_INTEGRADOR.DataAccess.DBSeeders
@@ -16,20 +15,5 @@ namespace TP_INTEGRADOR.DataAccess.DBSeeders
                 new User { CodUser = 4, Name = "Adriana Neporadnyj", DNI = 67891234, Password = "admin1357", UserRole = 2}
                 );
         }
-
-        //public void SeedDB(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<User>().HasData(
-
-        //        new User
-        //        {
-        //            CodUser = 1,
-        //            Name = "Maximiliano Viand",
-        //            DNI = 12345678,
-        //            Password = "admin1234",
-        //            UserRole = 1
-        //        }
-        //    );
-        //}
     }
 }

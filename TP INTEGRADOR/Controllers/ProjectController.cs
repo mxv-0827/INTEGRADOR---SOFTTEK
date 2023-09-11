@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TP_INTEGRADOR.DataAccess.Repositories;
+using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
 {
@@ -7,18 +10,20 @@ namespace TP_INTEGRADOR.Controllers
     [ApiController]
     public class ProjectController : ControllerBase
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+
+        public ProjectController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+
         [HttpGet]
         [Route("/getAllProjects")]
-        public IActionResult GetAllProjects()
+        public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
         {
-            try
-            {
-                return Ok("Proyectos obtenidos");
-            }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+            return await _unitOfWork.ProjectRepository.GetAll();
         }
 
         [HttpGet]
