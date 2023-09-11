@@ -16,10 +16,14 @@ namespace TP_INTEGRADOR.Entities
         [Required]
         [Column ("CodProject")]
         public int CodProject { get; set; }
+        [ForeignKey ("CodProject")] //Le asignamos nombre de identifacion a la FK.
+        public Project Project { get; set; } //Propiedad de navegacion.
 
         [Required]
         [Column ("CodService")]
         public int CodService { get; set; }
+        [ForeignKey ("CodService")] //Le asignamos nombre de identifacion a la FK.
+        public Service Service { get; set; } //Propiedad de navegacion.
 
         [Required]
         [Column ("AmountHours")]
@@ -32,5 +36,8 @@ namespace TP_INTEGRADOR.Entities
         [Required]
         [Column ("Cost", TypeName = "DECIMAL(18, 0)")]
         public decimal Cost { get; set; }
+
+        [Column ("LeavingDate", TypeName = "DATE")]
+        public DateTime? LeavingDate { get; set; }
     }
 }

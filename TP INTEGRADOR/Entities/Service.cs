@@ -20,5 +20,14 @@ namespace TP_INTEGRADOR.Entities
         [Required]
         [Column ("HourValue", TypeName = "DECIMAL(18, 0)")]
         public decimal HourValue { get; set; }
+
+        [Column("LeavingDate", TypeName = "DATE")]
+        public DateTime? LeavingDate { get; set; }
+
+
+        //Propiedad de navegacion
+        public ICollection<Work> Works { get; set; }
+
+
     }
 }
