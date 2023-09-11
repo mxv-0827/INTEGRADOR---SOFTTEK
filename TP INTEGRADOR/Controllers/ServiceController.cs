@@ -41,16 +41,9 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpGet]
         [Route("/getService")]
-        public IActionResult GetServiceById()
+        public async Task<ActionResult<Service>> GetServiceById(int id)
         {
-            try
-            {
-                return Ok("Servicio obtenido");
-            }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+            return await _unitOfWork.ServiceRepository.GetById(id);
         }
 
         [HttpPost]

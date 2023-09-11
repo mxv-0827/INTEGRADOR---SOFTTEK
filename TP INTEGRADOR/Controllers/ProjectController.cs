@@ -42,16 +42,9 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpGet]
         [Route("/getProject")]
-        public IActionResult GetProjectById()
+        public async Task<ActionResult<Project>> GetProjectById(int id)
         {
-            try
-            {
-                return Ok("Proyecto obtenido");
-            }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+            return await _unitOfWork.ProjectRepository.GetById(id);
         }
 
         [HttpPost]
