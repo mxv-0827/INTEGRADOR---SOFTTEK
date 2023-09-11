@@ -25,5 +25,8 @@ namespace TP_INTEGRADOR.Entities
         [Required]
         [Column ("UserRole")]
         public int UserRole { get; set; }
+
+        [Column ("LeavingDate", TypeName = "DATE")]
+        public DateTime? LeavingDate { get; set; }
     }
 }
