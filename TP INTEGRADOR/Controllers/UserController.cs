@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
 {
@@ -7,18 +9,20 @@ namespace TP_INTEGRADOR.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+
+        public UserController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+
         [HttpGet]
         [Route("/getAllUsers")]
-        public IActionResult GetAllUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
-            try
-            {
-                return Ok("Usuarios obtenidos");
-            }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+            return await _unitOfWork.UserRepository.GetAll();
         }
 
         [HttpGet]

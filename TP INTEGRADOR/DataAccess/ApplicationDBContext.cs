@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP_INTEGRADOR.DataAccess.DBSeeders;
-using TP_INTEGRADOR.DataAccess.Interface;
 using TP_INTEGRADOR.Entities;
 
 namespace TP_INTEGRADOR.DataAccess
