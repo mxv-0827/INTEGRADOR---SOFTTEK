@@ -28,16 +28,9 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpGet]
         [Route("/getWork")]
-        public IActionResult GetWorkById()
+        public async Task<ActionResult<Work>> GetWorkById(int id)
         {
-            try
-            {
-                return Ok("Trabajo obtenido");
-            }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+            return await _unitOfWork.WorkRepository.GetById(id);
         }
 
         [HttpPost]

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using TP_INTEGRADOR.Entities;
 using TP_INTEGRADOR.Services;
 
@@ -27,16 +28,9 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpGet]
         [Route("/getUser")]
-        public IActionResult GetUserById()
+        public async Task<ActionResult<User>> GetUserById(int id)
         {
-            try
-            {
-                return Ok("Usuario obtenido");
-            }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+            return await _unitOfWork.UserRepository.GetById(id);
         }
 
         [HttpPost]
