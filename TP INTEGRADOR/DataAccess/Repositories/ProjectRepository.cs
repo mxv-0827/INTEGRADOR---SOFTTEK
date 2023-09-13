@@ -1,4 +1,6 @@
-﻿using TP_INTEGRADOR.DataAccess.Repositories.Interface;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using TP_INTEGRADOR.DataAccess.Repositories.Interface;
 using TP_INTEGRADOR.Entities;
 
 namespace TP_INTEGRADOR.DataAccess.Repositories
@@ -10,6 +12,20 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
 
         }
 
+        public override async Task<bool> Update(Project entity, int id)
+        {
+            var projectToUpdate = await _dbContext.Set<Project>().FirstOrDefaultAsync(x => x.CodProject == id);
 
+            if(projectToUpdate != null)
+            {
+                projectToUpdate.Name = entity.Name;
+                projectToUpdate.Direction = entity.Direction;
+                projectToUpdate.State = entity.State;
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

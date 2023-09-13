@@ -75,16 +75,26 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPut]
         [Route("/updateWork")]
-        public IActionResult UpdateWork()
+        public async Task<ActionResult> UpdateWork(Work workToUpdate, int id)
         {
-            try
+            Work work = new Work
             {
-                return Ok("Trabajo modificado.");
-            }
-            catch
+                Date = workToUpdate.Date,
+                CodProject = workToUpdate.CodProject,
+                CodService = workToUpdate.CodService,
+                AmountHours = workToUpdate.AmountHours,
+                ValuePerHour = workToUpdate.ValuePerHour,
+        };
+
+            bool status = await _unitOfWork.WorkRepository.Update(work, id);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("Work successfully updated.");
             }
+
+            return BadRequest("Ooops! Something went wrong. Work not updated");
         }
     }
 }
