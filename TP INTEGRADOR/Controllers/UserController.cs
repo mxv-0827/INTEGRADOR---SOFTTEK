@@ -73,16 +73,25 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPut]
         [Route("/updateUser")]
-        public IActionResult UpdateUser()
+        public async Task<ActionResult> UpdateUser(UserDTO userToUpdate, int id)
         {
-            try
+            User user = new User
             {
-                return Ok("Usuario modificado.");
-            }
-            catch
+                Name = userToUpdate.Name,
+                DNI = userToUpdate.DNI,
+                Password = userToUpdate.Password,
+                UserRole = userToUpdate.UserRole,
+            };
+
+            bool status = await _unitOfWork.UserRepository.Update(user, id);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("User successfully updated.");
             }
+
+            return BadRequest("Ooops! Something went wrong. User not updated");
         }
     }
 }

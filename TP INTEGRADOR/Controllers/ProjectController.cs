@@ -86,16 +86,25 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPut]
         [Route("/updateProject")]
-        public IActionResult UpdateProject()
+        public async Task<ActionResult> UpdateProject(ProjectDTO projectToUpdate, int id)
         {
-            try
+            Project project = new Project
             {
-                return Ok("Proyecto modificado.");
-            }
-            catch
+                Name = projectToUpdate.Name,
+                Direction = projectToUpdate.Direction,
+                State = projectToUpdate.State,
+                LeavingDate = projectToUpdate.LeavingDate
+            };
+
+            bool status = await _unitOfWork.ProjectRepository.Update(project, id);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("Project successfully updated.");
             }
+
+            return BadRequest("Ooops! Something went wrong. Project not updated");
         }
     }
 }

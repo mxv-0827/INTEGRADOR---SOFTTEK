@@ -85,16 +85,24 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPut]
         [Route("/updateService")]
-        public IActionResult UpdateService()
+        public async Task<ActionResult> UpdateService(ServiceDTO serviceToUpdate, int id)
         {
-            try
+            Service service = new Service
             {
-                return Ok("Proyecto modificado.");
-            }
-            catch
+                Description = serviceToUpdate.Description,
+                State = serviceToUpdate.State,
+                HourValue = serviceToUpdate.HourValue,
+            };
+
+            bool status = await _unitOfWork.ServiceRepository.Update(service, id);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("Service successfully updated.");
             }
+
+            return BadRequest("Ooops! Something went wrong. Service not updated");
         }
     }
 }
