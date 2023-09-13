@@ -70,18 +70,19 @@ namespace TP_INTEGRADOR.Controllers
             return BadRequest("Ooops! Something went wrong. Project not created");
         }
 
-        [HttpDelete]
-        [Route("/deleteProject")]
-        public IActionResult DeleteProject()
+        [HttpPut]
+        [Route("/deleteProject")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        public async Task<ActionResult> DeleteProject(int id)
         {
-            try
+            bool status = await _unitOfWork.ProjectRepository.Delete(id);
+
+            if (status)
             {
-                return Ok("Proyecto eliminado.");
+                await _unitOfWork.Save();
+                return Ok("Project successfully deleted.");
             }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+
+            return BadRequest("Ooops! Something went wrong. Project not deleted");
         }
 
         [HttpPut]

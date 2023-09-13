@@ -57,22 +57,23 @@ namespace TP_INTEGRADOR.Controllers
             return BadRequest("Ooops!. Something went wrong. User not created.");
         }
 
-        [HttpDelete]
-        [Route("/deleteUser")]
-        public IActionResult DeleteUser()
+        [HttpPut]
+        [Route("/deleteUser")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        public async Task<ActionResult> DeleteUser(int id)
         {
-            try
+            bool status = await _unitOfWork.UserRepository.Delete(id);
+
+            if (status)
             {
-                return Ok("Usuario eliminado.");
+                await _unitOfWork.Save();
+                return Ok("User successfully deleted.");
             }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+
+            return BadRequest("Ooops! Something went wrong. User not deleted");
         }
 
         [HttpPut]
-        [Route("/updateUser")]
+        [Route("/updateUser")] 
         public async Task<ActionResult> UpdateUser(UserDTO userToUpdate, int id)
         {
             User user = new User

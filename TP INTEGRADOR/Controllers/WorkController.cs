@@ -59,18 +59,19 @@ namespace TP_INTEGRADOR.Controllers
             return BadRequest("Ooops! Something went wrong. Work not created");
         }
 
-        [HttpDelete]
-        [Route("/deleteWork")]
-        public IActionResult DeleteWork()
+        [HttpPut]
+        [Route("/deleteWork")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        public async Task<ActionResult> DeleteWork(int id)
         {
-            try
+            bool status = await _unitOfWork.UserRepository.Delete(id);
+
+            if (status)
             {
-                return Ok("Trabajo eliminado.");
+                await _unitOfWork.Save();
+                return Ok("Work successfully deleted.");
             }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+
+            return BadRequest("Ooops! Something went wrong. Work not deleted");
         }
 
         [HttpPut]
