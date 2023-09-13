@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TP_INTEGRADOR.DTOs;
 using TP_INTEGRADOR.Entities;
 using TP_INTEGRADOR.Services;
 
@@ -48,16 +49,24 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPost]
         [Route("/addService")]
-        public IActionResult AddService()
+        public async Task<ActionResult> AddService(ServiceDTO serviceToAdd)
         {
-            try
+            Service service = new Service
             {
-                return Ok("Servicio creado.");
-            }
-            catch
+                Description = serviceToAdd.Description,
+                State = serviceToAdd.State,
+                HourValue = serviceToAdd.HourValue
+            };
+
+            bool status = await _unitOfWork.ServiceRepository.Insert(service);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("Service successfully created");
             }
+
+            return BadRequest("Ooops! Something went wrong. Service not created");
         }
 
         [HttpDelete]

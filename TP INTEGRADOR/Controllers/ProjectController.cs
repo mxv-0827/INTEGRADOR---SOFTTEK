@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TP_INTEGRADOR.DataAccess.Repositories;
+using TP_INTEGRADOR.DTOs;
 using TP_INTEGRADOR.Entities;
 using TP_INTEGRADOR.Services;
 
@@ -49,16 +50,24 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPost]
         [Route("/addProject")]
-        public IActionResult AddProject() 
+        public async Task<ActionResult> AddProject(ProjectDTO projectToAdd) 
         {
-            try
+            Project project = new Project
             {
-                return Ok("Proyecto creado.");
-            }
-            catch
+                Name = projectToAdd.Name,
+                Direction = projectToAdd.Direction,
+                State = projectToAdd.State
+            };
+
+            bool status = await _unitOfWork.ProjectRepository.Insert(project);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("Project successfully created.");
             }
+
+            return BadRequest("Ooops! Something went wrong. Project not created");
         }
 
         [HttpDelete]

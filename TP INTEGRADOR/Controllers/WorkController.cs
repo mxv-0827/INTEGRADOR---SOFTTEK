@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
+using TP_INTEGRADOR.DTOs;
 using TP_INTEGRADOR.Entities;
 using TP_INTEGRADOR.Services;
 
@@ -35,16 +36,27 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPost]
         [Route("/addWork")]
-        public IActionResult AddWork()
+        public async Task<ActionResult> AddWork(WorkDTO workToAdd)
         {
-            try
+            Work work = new Work
             {
-                return Ok("Trabajo creado.");
-            }
-            catch
+                Date = workToAdd.Date,
+                CodProject = workToAdd.CodProject,
+                CodService = workToAdd.CodService,
+                AmountHours = workToAdd.AmountHours,
+                ValuePerHour = workToAdd.ValuePerHour
+            };
+            work.Cost = work.AmountHours * work.ValuePerHour;
+
+            bool status = await _unitOfWork.WorkRepository.Insert(work);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("Work successfully created.");
             }
+
+            return BadRequest("Ooops! Something went wrong. Work not created");
         }
 
         [HttpDelete]
