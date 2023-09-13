@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using TP_INTEGRADOR.DTOs;
 using TP_INTEGRADOR.Entities;
 using TP_INTEGRADOR.Services;
 
@@ -35,16 +36,25 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPost]
         [Route("/addUser")]
-        public IActionResult AddUser()
+        public async Task<ActionResult> AddUser(UserDTO userToAdd)
         {
-            try
+            User user = new User
             {
-                return Ok("Usuario creado.");
-            }
-            catch
+                Name = userToAdd.Name,
+                DNI = userToAdd.DNI,
+                UserRole = userToAdd.UserRole,
+                Password = userToAdd.Password
+            };
+
+            bool status = await _unitOfWork.UserRepository.Insert(user);
+
+            if (status)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                await _unitOfWork.Save();
+                return Ok("User successfully created");
             }
+
+            return BadRequest("Ooops!. Something went wrong. User not created.");
         }
 
         [HttpDelete]

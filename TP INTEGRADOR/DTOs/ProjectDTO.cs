@@ -2,9 +2,9 @@
 {
     public class ProjectDTO
     {
-        public int CodProject { get; set; }
         public string Name { get; set; }
         public string Direction { get; set; }
-        public bool State { get; set; }
+        public int State { get; set; }
+        public DateTime? LeavingDate { get; set; }
     }
 }

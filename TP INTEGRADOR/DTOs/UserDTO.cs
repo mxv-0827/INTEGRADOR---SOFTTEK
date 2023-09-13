@@ -2,10 +2,10 @@
 {
     public class UserDTO
     {
-        public int CodUser { get; set; }
         public string Name { get; set; }
         public int DNI { get; set; }
         public int UserRole { get; set; }
         public string Password { get; set; }
+        public DateTime? LeavingDate { get; set; }
     }
 }
