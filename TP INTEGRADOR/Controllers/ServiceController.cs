@@ -69,18 +69,19 @@ namespace TP_INTEGRADOR.Controllers
             return BadRequest("Ooops! Something went wrong. Service not created");
         }
 
-        [HttpDelete]
+        [HttpPut] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         [Route("/deleteService")]
-        public IActionResult DeleteService()
+        public async Task<ActionResult> DeleteService(int id)
         {
-            try
+            bool status = await _unitOfWork.ServiceRepository.Delete(id);
+
+            if (status)
             {
-                return Ok("Servicio eliminado.");
+                await _unitOfWork.Save();
+                return Ok("Service successfully deleted.");
             }
-            catch
-            {
-                return BadRequest("No se pudo realizar la peticion.");
-            }
+
+            return BadRequest("Ooops! Something went wrong. Service not deleted");
         }
 
         [HttpPut]
