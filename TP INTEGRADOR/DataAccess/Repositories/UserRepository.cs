@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP_INTEGRADOR.DataAccess.Repositories.Interface;
+using TP_INTEGRADOR.DTOs;
 using TP_INTEGRADOR.Entities;
 
 namespace TP_INTEGRADOR.DataAccess.Repositories
@@ -26,6 +27,12 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
             }
 
             return false;
+        }
+
+        //Verifica que coincida el ID y la PASSWORD para un correcto login.
+        public async Task<User?> AuthenticateCredentials(AuthenticateDTO userToAuthenticate)
+        {
+            return await _dbContext.Users.SingleOrDefaultAsync(x => x.CodUser == userToAuthenticate.ID && x.Password == userToAuthenticate.Password);
         }
     }
 }

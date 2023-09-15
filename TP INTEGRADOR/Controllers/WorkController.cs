@@ -63,7 +63,7 @@ namespace TP_INTEGRADOR.Controllers
         [Route("/deleteWork")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         public async Task<ActionResult> DeleteWork(int id)
         {
-            bool status = await _unitOfWork.UserRepository.Delete(id);
+            bool status = await _unitOfWork.WorkRepository.Delete(id);
 
             if (status)
             {
@@ -76,7 +76,7 @@ namespace TP_INTEGRADOR.Controllers
 
         [HttpPut]
         [Route("/updateWork")]
-        public async Task<ActionResult> UpdateWork(Work workToUpdate, int id)
+        public async Task<ActionResult> UpdateWork(WorkDTO workToUpdate, int id)
         {
             Work work = new Work
             {
