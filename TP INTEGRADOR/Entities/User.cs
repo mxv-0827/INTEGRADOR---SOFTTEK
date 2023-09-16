@@ -19,12 +19,14 @@ namespace TP_INTEGRADOR.Entities
         public int DNI { get; set; }
 
         [Required]
-        [Column ("Password", TypeName = "VARCHAR(15)")]
+        [Column ("Password", TypeName = "VARCHAR(250)")]
         public string Password { get; set; }
 
         [Required]
         [Column ("UserRole")]
         public int UserRole { get; set; }
+        [ForeignKey("UserRole")]
+        public Role Role { get; set; } //Propiedad de navegacion.
 
         [Column ("LeavingDate", TypeName = "DATE")]
         public DateTime? LeavingDate { get; set; }
