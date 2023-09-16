@@ -2,6 +2,7 @@
 using TP_INTEGRADOR.DataAccess.Repositories.Interface;
 using TP_INTEGRADOR.DTOs;
 using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Helpers;
 
 namespace TP_INTEGRADOR.DataAccess.Repositories
 {
@@ -20,7 +21,7 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
             {
                 userToUpdate.Name = entity.Name;
                 userToUpdate.DNI = entity.DNI;
-                userToUpdate.Password = entity.Password;
+                userToUpdate.Password = PasswordEncrypter_Helper.EncryptPassword(entity.Password, entity.DNI);
                 userToUpdate.UserRole = entity.UserRole;
 
                 return true;
@@ -32,7 +33,9 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
         //Verifica que coincida el ID y la PASSWORD para un correcto login.
         public async Task<User?> AuthenticateCredentials(AuthenticateDTO userToAuthenticate)
         {
-            return await _dbContext.Users.SingleOrDefaultAsync(x => x.CodUser == userToAuthenticate.ID && x.Password == userToAuthenticate.Password);
+            var user = await GetById(userToAuthenticate.ID); //Si el ID existe, quiero que me devuelva el DNI del usuario para pasarlo como parametro al 'EncryptPassword' y usarlo como SALT.
+
+            return user is not null ? await _dbContext.Users.SingleOrDefaultAsync(x => x.CodUser == userToAuthenticate.ID && x.Password == PasswordEncrypter_Helper.EncryptPassword(userToAuthenticate.Password, user.DNI)) : null;
         }
     }
 }

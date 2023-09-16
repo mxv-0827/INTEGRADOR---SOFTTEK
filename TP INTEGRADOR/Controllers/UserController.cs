@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using TP_INTEGRADOR.DTOs;
 using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Helpers;
 using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
@@ -46,7 +47,7 @@ namespace TP_INTEGRADOR.Controllers
                 Name = userToAdd.Name,
                 DNI = userToAdd.DNI,
                 UserRole = userToAdd.UserRole,
-                Password = userToAdd.Password
+                Password = PasswordEncrypter_Helper.EncryptPassword(userToAdd.Password, userToAdd.DNI)
             };
 
             bool status = await _unitOfWork.UserRepository.Insert(user);
