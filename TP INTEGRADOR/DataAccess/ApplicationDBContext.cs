@@ -12,10 +12,12 @@ namespace TP_INTEGRADOR.DataAccess
         public DbSet<Project> Projects { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Work> Works { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new RoleSeeder());
             modelBuilder.ApplyConfiguration(new UserSeeder());
             modelBuilder.ApplyConfiguration(new ProjectSeeder());
             modelBuilder.ApplyConfiguration(new ServiceSeeder());

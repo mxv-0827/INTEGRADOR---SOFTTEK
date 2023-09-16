@@ -11,6 +11,7 @@ namespace TP_INTEGRADOR.Services
         public ProjectRepository ProjectRepository { get; private set; }
         public ServiceRepository ServiceRepository { get; private set; }
         public WorkRepository WorkRepository { get; private set; }
+        public RoleRepository RoleRepository { get; private set; }
 
 
         public UnitOfWorkService(ApplicationDBContext dbContext)
