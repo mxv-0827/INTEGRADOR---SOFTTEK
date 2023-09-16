@@ -23,6 +23,7 @@ namespace TP_INTEGRADOR.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "Administrator")]
         [Route("/getAllUsers")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 using TP_INTEGRADOR.DataAccess;
 using TP_INTEGRADOR.Services;
@@ -43,6 +44,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseSqlServer("name=DefaultConnection");
 });
+
+builder.Services.AddAuthorization(options => options.AddPolicy("Administrator", policy => policy.RequireClaim(ClaimTypes.Role, "2")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters()
 {
