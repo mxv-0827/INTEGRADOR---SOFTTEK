@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TP_INTEGRADOR.DTOs;
+using TP_INTEGRADOR.DTOs.ProjectDTOs;
+using TP_INTEGRADOR.DTOs.ServiceDTOs;
 using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Infrastructure;
 using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ServiceController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -23,33 +27,100 @@ namespace TP_INTEGRADOR.Controllers
         [Route("/getAllServices")]
         public async Task<ActionResult<IEnumerable<Service>>> GetAllServices()
         {
-            return await _unitOfWork.ServiceRepository.GetAll();    
+            try
+            {
+                var serviceList = await _unitOfWork.ServiceRepository.GetAll();
+
+                if (serviceList.Any())
+                {
+                    var serviceDTOList = new List<ServiceGetDTO>();
+
+                    foreach (var serv in serviceList)
+                    {
+                        serviceDTOList.Add(new ServiceGetDTO
+                        {
+                            ID = serv.CodService,
+                            Description = serv.Description,
+                            State = serv.State,
+                            HourValue = serv.HourValue,
+                            LeavingDate = serv.LeavingDate
+                        });
+                    }
+
+                    return ResponseFactory.CreateSuccessResponse(200, serviceDTOList);
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Services table empty");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
+
 
         [HttpGet]
         [Route("/getActiveServices")]
-        public IActionResult GetActiveServices()
+        public async Task<ActionResult<IEnumerable<Service>>> GetActiveServices()
         {
             try
             {
-                return Ok("Servicios obtenidos");
+                var activeServicesList = await _unitOfWork.ServiceRepository.GetAllActiveServices();
+
+                if (activeServicesList.Any())
+                {
+                    var serviceDTOList = new List<ServiceGetDTO>();
+
+                    foreach (var serv in activeServicesList)
+                    {
+                        serviceDTOList.Add(new ServiceGetDTO
+                        {
+                            ID = serv.CodService,
+                            Description = serv.Description,
+                            State = serv.State,
+                            HourValue = serv.HourValue,
+                            LeavingDate = serv.LeavingDate
+                        });
+                    }
+
+                    return ResponseFactory.CreateSuccessResponse(200, serviceDTOList);
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "There are no active services.");
             }
+
             catch
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
 
+
         [HttpGet]
-        [Route("/getService")]
-        public async Task<ActionResult<Service>> GetServiceById(int id)
+        [Route("/getService/{id}")]
+        public async Task<ActionResult<Service>> GetServiceById([FromRoute] int id)
         {
-            return await _unitOfWork.ServiceRepository.GetById(id);
+            try
+            {
+                var service = await _unitOfWork.ServiceRepository.GetById(id);
+
+                if (service != null) return ResponseFactory.CreateSuccessResponse(200, new ServiceGetDTO { ID = service.CodService, Description = service.Description, State = service.State, HourValue = service.HourValue, LeavingDate = service.LeavingDate });
+
+                return ResponseFactory.CreateErrorResponse(404, "ID not found.");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
 
+
         [HttpPost]
+        [Authorize(Policy = "Administrator")]
         [Route("/addService")]
-        public async Task<ActionResult> AddService(ServiceDTO serviceToAdd)
+        public async Task<ActionResult> AddService(ServiceAddDTO serviceToAdd)
         {
             Service service = new Service
             {
@@ -58,52 +129,81 @@ namespace TP_INTEGRADOR.Controllers
                 HourValue = serviceToAdd.HourValue
             };
 
-            bool status = await _unitOfWork.ServiceRepository.Insert(service);
-
-            if (status)
+            try
             {
-                await _unitOfWork.Save();
-                return Ok("Service successfully created");
+                bool status = await _unitOfWork.ServiceRepository.Insert(service);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Service added to DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Service not added to DB.");
             }
 
-            return BadRequest("Ooops! Something went wrong. Service not created");
-        }
-
-        [HttpPut] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
-        [Route("/deleteService")]
-        public async Task<ActionResult> DeleteService(int id)
-        {
-            bool status = await _unitOfWork.ServiceRepository.Delete(id);
-
-            if (status)
+            catch
             {
-                await _unitOfWork.Save();
-                return Ok("Service successfully deleted.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
-
-            return BadRequest("Ooops! Something went wrong. Service not deleted");
         }
+
 
         [HttpPut]
-        [Route("/updateService")]
-        public async Task<ActionResult> UpdateService(ServiceDTO serviceToUpdate, int id)
+        [Authorize(Policy = "Administrator")]
+        [Route("/updateService/{id}")]
+        public async Task<ActionResult> UpdateService(ServiceUpdateDTO serviceToUpdate, [FromRoute] int id)
         {
             Service service = new Service
             {
                 Description = serviceToUpdate.Description,
                 State = serviceToUpdate.State,
                 HourValue = serviceToUpdate.HourValue,
+                LeavingDate = serviceToUpdate.LeavingDate
             };
 
-            bool status = await _unitOfWork.ServiceRepository.Update(service, id);
-
-            if (status)
+            try
             {
-                await _unitOfWork.Save();
-                return Ok("Service successfully updated.");
+                bool status = await _unitOfWork.ServiceRepository.Update(service, id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Service successfully updated");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Service not updated.");
             }
 
-            return BadRequest("Ooops! Something went wrong. Service not updated");
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
+        }
+
+
+        [HttpPut] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        [Authorize(Policy = "Administrator")]
+        [Route("/deleteService/{id}")]
+        public async Task<ActionResult> DeleteService([FromRoute] int id)
+        {
+            try
+            {
+                bool status = await _unitOfWork.ServiceRepository.Delete(id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Service deleted from DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Service not deleted.");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
     }
 }
