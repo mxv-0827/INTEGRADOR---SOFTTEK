@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TP_INTEGRADOR.DataAccess.Repositories;
-using TP_INTEGRADOR.DTOs;
+using TP_INTEGRADOR.DTOs.ProjectDTOs;
+using TP_INTEGRADOR.DTOs.UserDTOs;
 using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Infrastructure;
 using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -24,33 +28,100 @@ namespace TP_INTEGRADOR.Controllers
         [Route("/getAllProjects")]
         public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
         {
-            return await _unitOfWork.ProjectRepository.GetAll();
+            try
+            {
+                var projectList = await _unitOfWork.ProjectRepository.GetAll();
+
+                if (projectList.Any())
+                {
+                    var projectDTOList = new List<ProjectGetDTO>();
+
+                    foreach (var proj in projectList)
+                    {
+                        projectDTOList.Add(new ProjectGetDTO
+                        {
+                            ID = proj.CodProject,
+                            Name = proj.Name,
+                            Direction = proj.Direction,
+                            State = proj.State,
+                            LeavingDate = proj.LeavingDate
+                        });
+                    }
+
+                    return ResponseFactory.CreateSuccessResponse(200, projectDTOList);
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Projects table empty");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
+
 
         [HttpGet]
         [Route("/getProjectFilter")]
-        public IActionResult GetProjectsByState()
+        public async Task<ActionResult> GetProjectsByState(int state)
         {
             try
             {
-                return Ok("Proyectos obtenidos");
+                var projectsStateList = await _unitOfWork.ProjectRepository.GetAllStateProjects(state);
+
+                if (projectsStateList.Any())
+                {
+                    var projectDTOList = new List<ProjectGetDTO>();
+
+                    foreach (var proj in projectsStateList)
+                    {
+                        projectDTOList.Add(new ProjectGetDTO
+                        {
+                            ID = proj.CodProject,
+                            Name = proj.Name,
+                            Direction = proj.Direction,
+                            State = proj.State,
+                            LeavingDate = proj.LeavingDate
+                        });
+                    }
+
+                    return ResponseFactory.CreateSuccessResponse(200, projectDTOList);
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Not projects found with the established state.");
             }
+
             catch
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
 
+
         [HttpGet]
-        [Route("/getProject")]
-        public async Task<ActionResult<Project>> GetProjectById(int id)
+        [Route("/getProject/{id}")]
+        public async Task<ActionResult<Project>> GetProjectById([FromRoute] int id)
         {
-            return await _unitOfWork.ProjectRepository.GetById(id);
+            try
+            {
+                var project = await _unitOfWork.ProjectRepository.GetById(id);
+
+                if (project != null) return ResponseFactory.CreateSuccessResponse(200, new ProjectGetDTO { ID = project.CodProject, Name = project.Name, Direction = project.Direction, State = project.State, LeavingDate = project.LeavingDate});
+
+                return ResponseFactory.CreateErrorResponse(404, "ID not found.");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
 
+
         [HttpPost]
+        [Authorize(Policy = "Administrator")]
         [Route("/addProject")]
-        public async Task<ActionResult> AddProject(ProjectDTO projectToAdd) 
+        public async Task<ActionResult> AddProject(ProjectAddDTO projectToAdd) 
         {
             Project project = new Project
             {
@@ -59,35 +130,30 @@ namespace TP_INTEGRADOR.Controllers
                 State = projectToAdd.State
             };
 
-            bool status = await _unitOfWork.ProjectRepository.Insert(project);
-
-            if (status)
+            try
             {
-                await _unitOfWork.Save();
-                return Ok("Project successfully created.");
+                bool status = await _unitOfWork.ProjectRepository.Insert(project);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Project added to DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Project not added to DB.");
             }
 
-            return BadRequest("Ooops! Something went wrong. Project not created");
-        }
-
-        [HttpPut]
-        [Route("/deleteProject")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
-        public async Task<ActionResult> DeleteProject(int id)
-        {
-            bool status = await _unitOfWork.ProjectRepository.Delete(id);
-
-            if (status)
+            catch
             {
-                await _unitOfWork.Save();
-                return Ok("Project successfully deleted.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
-
-            return BadRequest("Ooops! Something went wrong. Project not deleted");
         }
 
+
         [HttpPut]
-        [Route("/updateProject")]
-        public async Task<ActionResult> UpdateProject(ProjectDTO projectToUpdate, int id)
+        [Authorize(Policy = "Administrator")]
+        [Route("/updateProject/{id}")]
+        public async Task<ActionResult> UpdateProject(ProjectUpdateDTO projectToUpdate, [FromRoute] int id)
         {
             Project project = new Project
             {
@@ -97,15 +163,48 @@ namespace TP_INTEGRADOR.Controllers
                 LeavingDate = projectToUpdate.LeavingDate
             };
 
-            bool status = await _unitOfWork.ProjectRepository.Update(project, id);
-
-            if (status)
+            try
             {
-                await _unitOfWork.Save();
-                return Ok("Project successfully updated.");
+                bool status = await _unitOfWork.ProjectRepository.Update(project, id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Project successfully updated");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Project not updated.");
             }
 
-            return BadRequest("Ooops! Something went wrong. Project not updated");
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
+        }
+
+
+        [HttpPut]
+        [Authorize(Policy = "Administrator")]
+        [Route("/deleteProject/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        public async Task<ActionResult> DeleteProject([FromRoute] int id)
+        {
+            try
+            {
+                bool status = await _unitOfWork.ProjectRepository.Delete(id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Project deleted from DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Project not deleted.");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
     }
 }

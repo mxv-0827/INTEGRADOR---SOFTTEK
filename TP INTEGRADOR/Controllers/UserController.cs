@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using TP_INTEGRADOR.DTOs;
+using Microsoft.EntityFrameworkCore;
+using TP_INTEGRADOR.DTOs.UserDTOs;
 using TP_INTEGRADOR.Entities;
 using TP_INTEGRADOR.Helpers;
+using TP_INTEGRADOR.Infrastructure;
 using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
@@ -24,23 +26,66 @@ namespace TP_INTEGRADOR.Controllers
 
 
         [HttpGet]
-        [Authorize(Policy = "Administrator")]
         [Route("/getAllUsers")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
-            return await _unitOfWork.UserRepository.GetAll();
+            try
+            {
+                var usersList = await _unitOfWork.UserRepository.GetAll();
+
+                if (usersList.Any()) 
+                {
+                    var usersDTOList = new List<UserGetDTO>();
+
+                    foreach (var us in usersList)
+                    {
+                        usersDTOList.Add(new UserGetDTO 
+                        {
+                            ID = us.CodUser,
+                            Name = us.Name,
+                            DNI = us.DNI,
+                            UserRole = us.UserRole,
+                            LeavingDate = us.LeavingDate
+                        });
+                    }
+
+                    return ResponseFactory.CreateSuccessResponse(200, usersDTOList);
+                } 
+
+                return ResponseFactory.CreateErrorResponse(404, "Users table is empty.");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
+
 
         [HttpGet]
-        [Route("/getUser")]
-        public async Task<ActionResult<User>> GetUserById(int id)
+        [Route("/getUser/{id}")]
+        public async Task<ActionResult<User>> GetUserById([FromRoute] int id)
         {
-            return await _unitOfWork.UserRepository.GetById(id);
+            try
+            {
+                var user = await _unitOfWork.UserRepository.GetById(id);
+                
+                if (user != null) return ResponseFactory.CreateSuccessResponse(200, new UserGetDTO { ID = user.CodUser, Name = user.Name, DNI = user.DNI, UserRole = user.UserRole, LeavingDate = user.LeavingDate});
+                
+                return ResponseFactory.CreateErrorResponse(404, "ID not found.");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
 
+
         [HttpPost]
+        [Authorize(Policy = "Administrator")]
         [Route("/addUser")]
-        public async Task<ActionResult> AddUser(UserDTO userToAdd)
+        public async Task<ActionResult> AddUser(UserAddDTO userToAdd)
         {
             User user = new User
             {
@@ -50,53 +95,83 @@ namespace TP_INTEGRADOR.Controllers
                 Password = PasswordEncrypter_Helper.EncryptPassword(userToAdd.Password, userToAdd.DNI)
             };
 
-            bool status = await _unitOfWork.UserRepository.Insert(user);
-
-            if (status)
+            try
             {
-                await _unitOfWork.Save();
-                return Ok("User successfully created");
+                bool status = await _unitOfWork.UserRepository.Insert(user);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(201, "User successfully added to DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "User not added to DB");
             }
 
-            return BadRequest("Ooops!. Something went wrong. User not created.");
-        }
-
-        [HttpPut]
-        [Route("/deleteUser")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
-        public async Task<ActionResult> DeleteUser(int id)
-        {
-            bool status = await _unitOfWork.UserRepository.Delete(id);
-
-            if (status)
+            catch (Exception)
             {
-                await _unitOfWork.Save();
-                return Ok("User successfully deleted.");
+                return ResponseFactory.CreateSuccessResponse(500, "Server error.");
             }
-
-            return BadRequest("Ooops! Something went wrong. User not deleted");
         }
 
+
         [HttpPut]
-        [Route("/updateUser")] 
-        public async Task<ActionResult> UpdateUser(UserDTO userToUpdate, int id)
+        [Authorize(Policy = "Administrator")]
+        [Route("/updateUser/{id}")]
+        public async Task<ActionResult> UpdateUser(UserUpdateDTO userToUpdate, [FromRoute] int id)
         {
             User user = new User
             {
                 Name = userToUpdate.Name,
-                DNI = userToUpdate.DNI,
                 Password = userToUpdate.Password,
                 UserRole = userToUpdate.UserRole,
+                LeavingDate = userToUpdate.LeavingDate
             };
 
-            bool status = await _unitOfWork.UserRepository.Update(user, id);
-
-            if (status)
+            try
             {
-                await _unitOfWork.Save();
-                return Ok("User successfully updated.");
+                bool status = await _unitOfWork.UserRepository.Update(user, id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "User successfully updated.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "User not updated.");
             }
 
-            return BadRequest("Ooops! Something went wrong. User not updated");
+            catch (Exception)
+            {
+                return ResponseFactory.CreateSuccessResponse(500, "Server error.");
+            }
         }
+
+
+        [HttpPut]
+        [Authorize(Policy = "Administrator")]
+        [Route("/deleteUser/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        public async Task<ActionResult> DeleteUser([FromRoute] int id)
+        {
+            try
+            {
+                bool status = await _unitOfWork.UserRepository.Delete(id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "User successfully deleted from DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Id not found.");
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
+        }
+
+        
     }
 }

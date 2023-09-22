@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TP_INTEGRADOR.DTOs;
+using TP_INTEGRADOR.Entities;
 using TP_INTEGRADOR.Helpers;
+using TP_INTEGRADOR.Infrastructure;
 using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
@@ -21,22 +23,32 @@ namespace TP_INTEGRADOR.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Login(AuthenticateDTO userToAuthenticate)
+        public async Task<ActionResult> Login(AuthenticateDTO userToAuthenticate)
         {
-            var userCredentials = await _unitOfWork.UserRepository.AuthenticateCredentials(userToAuthenticate);
-
-            if (userCredentials is null) return Unauthorized("Incorrect combination of credentials.");
-
-            var token = _token.GenerateToken(userCredentials);
-
-            var userAuthenticated = new LoginDTO
+            try
             {
-                UserName = userCredentials.Name,
-                UserDNI = userCredentials.DNI,
-                UserToken = token
-            };
+                var userCredentials = await _unitOfWork.UserRepository.AuthenticateCredentials(userToAuthenticate);
 
-            return Ok(userAuthenticated);
+                if (userCredentials is ObjectResult error) return error;
+
+                var userCredentials2 = (User)userCredentials;
+                var token = _token.GenerateToken(userCredentials2);
+
+                var userAuthenticated = new LoginDTO
+                {
+                    UserName = userCredentials2.Name,
+                    UserDNI = userCredentials2.DNI,
+                    UserRole = userCredentials2.UserRole,
+                    UserToken = token
+                };
+
+                return ResponseFactory.CreateSuccessResponse(200, userAuthenticated);
+            }
+
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "An unknown error has occured.");
+            }
         }
     }
 }

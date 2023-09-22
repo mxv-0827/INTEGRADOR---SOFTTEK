@@ -1,11 +1,10 @@
-﻿namespace TP_INTEGRADOR.DTOs
+﻿namespace TP_INTEGRADOR.DTOs.UserDTOs
 {
-    public class UserDTO
+    public class UserUpdateDTO
     {
         public string Name { get; set; }
-        public int DNI { get; set; }
-        public int UserRole { get; set; }
         public string Password { get; set; }
+        public int UserRole { get; set; }
         public DateTime? LeavingDate { get; set; }
     }
 }

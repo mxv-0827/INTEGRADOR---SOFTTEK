@@ -1,6 +1,6 @@
-﻿namespace TP_INTEGRADOR.DTOs
+﻿namespace TP_INTEGRADOR.DTOs.ProjectDTOs
 {
-    public class ProjectDTO
+    public class ProjectUpdateDTO
     {
         public string Name { get; set; }
         public string Direction { get; set; }

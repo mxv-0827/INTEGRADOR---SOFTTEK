@@ -4,7 +4,7 @@ namespace TP_INTEGRADOR.Infrastructure
 {
     public static class ResponseFactory
     {
-        public static IActionResult CreateSuccessResponse(int statusCode, object? data)
+        public static ActionResult CreateSuccessResponse(int statusCode, object? data)
         {
             var response = new SuccessResponse
             {
@@ -18,22 +18,18 @@ namespace TP_INTEGRADOR.Infrastructure
             };
         }
 
-        public static IActionResult CreateErrorResponse(int statusCode, string[] errors)
+
+        public static ObjectResult CreateErrorResponse(int statusCode, string errorMessage)
         {
-            var response = new ErrorResponse
+            var errorResponse = new ErrorResponse
             {
                 StatusCode = statusCode,
-                Errors = new List<ErrorResponse.Error>()
+                ErrorMessage = errorMessage
             };
 
-            foreach(string error in errors)
+            return new ObjectResult(errorResponse)
             {
-                response.Errors.Add(new ErrorResponse.Error { Description = error });
-            }
-
-            return new ObjectResult(response)
-            {
-                StatusCode = statusCode
+                StatusCode = statusCode,
             };
         }
     }

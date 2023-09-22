@@ -22,6 +22,7 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
                 workToUpdate.CodService = entity.CodService;
                 workToUpdate.AmountHours= entity.AmountHours;
                 workToUpdate.ValuePerHour = entity.ValuePerHour;
+                workToUpdate.LeavingDate = entity.LeavingDate;
 
                 return true;
             }

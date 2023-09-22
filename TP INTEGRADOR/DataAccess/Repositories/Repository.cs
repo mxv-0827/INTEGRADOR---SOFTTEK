@@ -14,10 +14,10 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
         public virtual async Task<List<T>> GetAll() => await _dbContext.Set<T>().ToListAsync();
         public virtual async Task<T> GetById(int id) => await _dbContext.Set<T>().FindAsync(id);
 
-        public virtual async Task<bool>Insert(T entity)
+        public virtual async Task<bool> Insert(T entity)
         {
-            var entityAdded = await _dbContext.Set<T>().AddAsync(entity);
-            return entityAdded != null;
+            var error = await _dbContext.Set<T>().AddAsync(entity);
+            return error != null;
         }
 
         //Como es implementado, no arroja error. Cada entidad actualiza cosas distintas.
@@ -34,7 +34,7 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
             {
                 var leavingDateProperty = typeof(T).GetProperty("LeavingDate");
 
-                leavingDateProperty.SetValue(entity, DateTime.Now);
+                leavingDateProperty?.SetValue(entity, DateTime.Now);
                 return true;
             }
 

@@ -12,6 +12,8 @@ namespace TP_INTEGRADOR.DataAccess.Repositories
 
         }
 
+        public async Task<List<Project>> GetAllStateProjects(int state) => await _dbContext.Set<Project>().Where(x => x.State == state).ToListAsync();
+
         public override async Task<bool> Update(Project entity, int id)
         {
             var projectToUpdate = await _dbContext.Set<Project>().FirstOrDefaultAsync(x => x.CodProject == id);
