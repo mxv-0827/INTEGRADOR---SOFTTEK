@@ -22,6 +22,11 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
+        /// <summary>
+        /// Brings access to the rest of the routes depending on the written credentials.
+        /// </summary>
+        /// <param name="userToAuthenticate">ID and Password to validate.</param>
+        /// <returns>The valid token for the user to use and access the rest of the routes.</returns>
         [HttpPost]
         public async Task<ActionResult> Login(AuthenticateDTO userToAuthenticate)
         {

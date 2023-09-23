@@ -23,9 +23,11 @@ namespace TP_INTEGRADOR.Controllers
             _unitOfWork = unitOfWork;
         }
 
-
-        [HttpGet]
-        [Route("/getAllProjects")]
+        /// <summary>
+        /// Obtains all projects from DB.
+        /// </summary>
+        /// <returns>All projects whether they have been deactivated or not.</returns>
+        [HttpGet("GetAllProjects")]
         public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
         {
             try
@@ -61,8 +63,12 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getProjectFilter")]
+        /// <summary>
+        /// Obtains all projects with the state that matches the one written.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns>Projects with the same state as the parameter.</returns>
+        [HttpGet("GetProjectsByState")]
         public async Task<ActionResult> GetProjectsByState(int state)
         {
             try
@@ -98,8 +104,12 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getProject/{id}")]
+        /// <summary>
+        /// Obtains the project that matches with the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns the project with the same ID as the written one.</returns>
+        [HttpGet("GetProjectById/{id}")]
         public async Task<ActionResult<Project>> GetProjectById([FromRoute] int id)
         {
             try
@@ -118,9 +128,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPost]
+        /// <summary>
+        /// Adds a new project to DB.
+        /// </summary>
+        /// <param name="projectToAdd">The project to add.</param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPost("AddProject")]
         [Authorize(Policy = "Administrator")]
-        [Route("/addProject")]
         public async Task<ActionResult> AddProject(ProjectAddDTO projectToAdd) 
         {
             Project project = new Project
@@ -150,9 +164,14 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut]
+        /// <summary>
+        /// Modifies a project based on the given ID.
+        /// </summary>
+        /// <param name="projectToUpdate">The new project's features.</param>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("Updateproject/{id}")]
         [Authorize(Policy = "Administrator")]
-        [Route("/updateProject/{id}")]
         public async Task<ActionResult> UpdateProject(ProjectUpdateDTO projectToUpdate, [FromRoute] int id)
         {
             Project project = new Project
@@ -183,9 +202,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut]
+        /// <summary>
+        /// Deactivates a project based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("DeleteProject/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         [Authorize(Policy = "Administrator")]
-        [Route("/deleteProject/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         public async Task<ActionResult> DeleteProject([FromRoute] int id)
         {
             try
