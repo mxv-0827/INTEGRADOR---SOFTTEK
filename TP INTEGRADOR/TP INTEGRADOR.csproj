@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>TP_INTEGRADOR</RootNamespace>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\gvian\OneDrive\Documents\Maxi\.NET BOOTCAMP - SOFTEK\INTEGRADOR\TP INTEGRADOR\TP INTEGRADOR\bin\Debug\net6.0\TP INTEGRADOR.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

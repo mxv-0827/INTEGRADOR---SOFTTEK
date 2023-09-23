@@ -24,8 +24,11 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getAllWorks")]
+        /// <summary>
+        /// Obtains all works from DB.
+        /// </summary>
+        /// <returns>All works whether they have been deactivated or not.</returns>
+        [HttpGet("GetAllWorks")]
         public async Task<ActionResult<IEnumerable<Work>>> GetAllWorks()
         {
             try
@@ -63,8 +66,12 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getWork/{id}")]
+        /// <summary>
+        /// Obtains a work based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The work that matches the ID.</returns>
+        [HttpGet("GetWorkById/{id}")]
         public async Task<ActionResult<Work>> GetWorkById([FromRoute] int id)
         {
             try
@@ -84,9 +91,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPost]
+        /// <summary>
+        /// Adds a new work to DB.
+        /// </summary>
+        /// <param name="workToAdd">The work to Add.</param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPost("AddWork")]
         [Authorize(Policy = "Administrator")]
-        [Route("/addWork")]
         public async Task<ActionResult> AddWork(WorkAddDTO workToAdd)
         {
             Work work = new Work
@@ -119,9 +130,14 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut]
+        /// <summary>
+        /// Modifies a work based on the given ID.
+        /// </summary>
+        /// <param name="workToUpdate">The new work's features.</param>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("UpdateWork/{id}")]
         [Authorize(Policy = "Administrator")]
-        [Route("/updateWork/{id}")]
         public async Task<ActionResult> UpdateWork(WorkUpdateDTO workToUpdate, [FromRoute] int id)
         {
             Work work = new Work
@@ -154,9 +170,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut]
+        /// <summary>
+        /// Deactivates a work based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("DeleteWork/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         [Authorize(Policy = "Administrator")]
-        [Route("/deleteWork/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         public async Task<ActionResult> DeleteWork([FromRoute] int id)
         {
             bool status = await _unitOfWork.WorkRepository.Delete(id);

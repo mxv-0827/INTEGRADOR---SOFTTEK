@@ -24,9 +24,11 @@ namespace TP_INTEGRADOR.Controllers
             _unitOfWork = unitOfWork;
         }
 
-
-        [HttpGet]
-        [Route("/getAllUsers")]
+        /// <summary>
+        /// Obtains all users from DB.
+        /// </summary>
+        /// <returns>Every user whether is activated or not.</returns>
+        [HttpGet("GetAllUsers")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
             try
@@ -62,8 +64,12 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getUser/{id}")]
+        /// <summary>
+        /// Obtains the user based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The user that matched with the ID.</returns>
+        [HttpGet("GetUser/{id}")]
         public async Task<ActionResult<User>> GetUserById([FromRoute] int id)
         {
             try
@@ -82,9 +88,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPost]
+        /// <summary>
+        /// Adds a new user to DB.
+        /// </summary>
+        /// <param name="userToAdd">The user to add.</param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPost("AddUser")]
         [Authorize(Policy = "Administrator")]
-        [Route("/addUser")]
         public async Task<ActionResult> AddUser(UserAddDTO userToAdd)
         {
             User user = new User
@@ -115,9 +125,14 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut]
+        /// <summary>
+        /// Modifies a user based on the given ID.
+        /// </summary>
+        /// <param name="userToUpdate">The user's new features.</param>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("UpdateUser/{id}")]
         [Authorize(Policy = "Administrator")]
-        [Route("/updateUser/{id}")]
         public async Task<ActionResult> UpdateUser(UserUpdateDTO userToUpdate, [FromRoute] int id)
         {
             User user = new User
@@ -148,9 +163,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut]
+        /// <summary>
+        /// Deactivates a user based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("DeleteUser/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         [Authorize(Policy = "Administrator")]
-        [Route("/deleteUser/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         public async Task<ActionResult> DeleteUser([FromRoute] int id)
         {
             try
@@ -171,7 +190,5 @@ namespace TP_INTEGRADOR.Controllers
                 return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
-
-        
     }
 }

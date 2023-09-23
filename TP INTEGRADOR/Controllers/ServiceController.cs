@@ -23,8 +23,11 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getAllServices")]
+        /// <summary>
+        /// Obtains all services from DB.
+        /// </summary>
+        /// <returns>All services whether they have been deactivated or not.</returns>
+        [HttpGet("GetAllServices")]
         public async Task<ActionResult<IEnumerable<Service>>> GetAllServices()
         {
             try
@@ -60,8 +63,11 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getActiveServices")]
+        /// <summary>
+        /// Obtains all services whose 'State' prop is 'True'.
+        /// </summary>
+        /// <returns>All projects which are active at the moment.</returns>
+        [HttpGet("GetActiveServices")]
         public async Task<ActionResult<IEnumerable<Service>>> GetActiveServices()
         {
             try
@@ -97,8 +103,12 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpGet]
-        [Route("/getService/{id}")]
+        /// <summary>
+        /// Obtains a service based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>The service that matches the ID.</returns>
+        [HttpGet("GetServiceById/{id}")]
         public async Task<ActionResult<Service>> GetServiceById([FromRoute] int id)
         {
             try
@@ -117,9 +127,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPost]
+        /// <summary>
+        /// Adds a new service to DB.
+        /// </summary>
+        /// <param name="serviceToAdd">The service to add.</param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPost("AddService")]
         [Authorize(Policy = "Administrator")]
-        [Route("/addService")]
         public async Task<ActionResult> AddService(ServiceAddDTO serviceToAdd)
         {
             Service service = new Service
@@ -149,9 +163,14 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut]
+        /// <summary>
+        /// Modifies a service based on the given ID.
+        /// </summary>
+        /// <param name="serviceToUpdate">The new service's features.</param>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("UpdateService/{id}")]
         [Authorize(Policy = "Administrator")]
-        [Route("/updateService/{id}")]
         public async Task<ActionResult> UpdateService(ServiceUpdateDTO serviceToUpdate, [FromRoute] int id)
         {
             Service service = new Service
@@ -182,9 +201,13 @@ namespace TP_INTEGRADOR.Controllers
         }
 
 
-        [HttpPut] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        /// <summary>
+        /// Deactivates a service based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("DeleteService/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
         [Authorize(Policy = "Administrator")]
-        [Route("/deleteService/{id}")]
         public async Task<ActionResult> DeleteService([FromRoute] int id)
         {
             try
