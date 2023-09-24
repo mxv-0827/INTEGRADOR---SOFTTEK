@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TP_INTEGRADOR.DTOs.ProjectDTOs;
 using TP_INTEGRADOR.DTOs.ServiceDTOs;
 using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Helpers;
 using TP_INTEGRADOR.Infrastructure;
 using TP_INTEGRADOR.Services;
 
@@ -24,15 +25,16 @@ namespace TP_INTEGRADOR.Controllers
 
 
         /// <summary>
-        /// Obtains all services from DB.
+        /// Obtains all services from DB based on the given number of 'itemsPerPage'.
         /// </summary>
         /// <returns>All services whether they have been deactivated or not.</returns>
         [HttpGet("GetAllServices")]
-        public async Task<ActionResult<IEnumerable<Service>>> GetAllServices()
+        public async Task<ActionResult<IEnumerable<Service>>> GetAllServices(int? itemsPerPage)
         {
             try
             {
                 var serviceList = await _unitOfWork.ServiceRepository.GetAll();
+                int pageToShow = 1;
 
                 if (serviceList.Any())
                 {
@@ -50,7 +52,13 @@ namespace TP_INTEGRADOR.Controllers
                         });
                     }
 
-                    return ResponseFactory.CreateSuccessResponse(200, serviceDTOList);
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedServices = Pagination_Helper.Paginate(serviceDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedServices);
                 }
 
                 return ResponseFactory.CreateErrorResponse(404, "Services table empty");
@@ -64,15 +72,16 @@ namespace TP_INTEGRADOR.Controllers
 
 
         /// <summary>
-        /// Obtains all services whose 'State' prop is 'True'.
+        /// Obtains all services whose 'State' prop is 'True'. In addition, a pagination can be added..
         /// </summary>
         /// <returns>All projects which are active at the moment.</returns>
         [HttpGet("GetActiveServices")]
-        public async Task<ActionResult<IEnumerable<Service>>> GetActiveServices()
+        public async Task<ActionResult<IEnumerable<Service>>> GetActiveServices(int? itemsPerPage)
         {
             try
             {
                 var activeServicesList = await _unitOfWork.ServiceRepository.GetAllActiveServices();
+                int pageToShow = 1;
 
                 if (activeServicesList.Any())
                 {
@@ -90,7 +99,13 @@ namespace TP_INTEGRADOR.Controllers
                         });
                     }
 
-                    return ResponseFactory.CreateSuccessResponse(200, serviceDTOList);
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedServices = Pagination_Helper.Paginate(serviceDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedServices);
                 }
 
                 return ResponseFactory.CreateErrorResponse(404, "There are no active services.");
