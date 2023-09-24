@@ -18,22 +18,24 @@ namespace TP_INTEGRADOR.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
-
         public UserController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
+
         /// <summary>
-        /// Obtains all users from DB.
+        /// Obtains all users from DB paginated based on the given number of 'itemsPerPage'.
         /// </summary>
+        /// <param name="itemsPerPage"></param>
         /// <returns>Every user whether is activated or not.</returns>
         [HttpGet("GetAllUsers")]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers(int? itemsPerPage)
         {
             try
             {
                 var usersList = await _unitOfWork.UserRepository.GetAll();
+                int pageToShow = 1;
 
                 if (usersList.Any()) 
                 {
@@ -51,7 +53,13 @@ namespace TP_INTEGRADOR.Controllers
                         });
                     }
 
-                    return ResponseFactory.CreateSuccessResponse(200, usersDTOList);
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+                    
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedUsers = Pagination_Helper.Paginate(usersDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedUsers);
                 } 
 
                 return ResponseFactory.CreateErrorResponse(404, "Users table is empty.");

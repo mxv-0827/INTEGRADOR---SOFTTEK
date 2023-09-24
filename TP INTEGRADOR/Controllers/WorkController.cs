@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using TP_INTEGRADOR.DTOs.ProjectDTOs;
 using TP_INTEGRADOR.DTOs.WorkDTOs;
 using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Helpers;
 using TP_INTEGRADOR.Infrastructure;
 using TP_INTEGRADOR.Services;
 
@@ -25,15 +26,16 @@ namespace TP_INTEGRADOR.Controllers
 
 
         /// <summary>
-        /// Obtains all works from DB.
+        /// Obtains all works from DB based on the given number of 'itemsPerPage'.
         /// </summary>
         /// <returns>All works whether they have been deactivated or not.</returns>
         [HttpGet("GetAllWorks")]
-        public async Task<ActionResult<IEnumerable<Work>>> GetAllWorks()
+        public async Task<ActionResult<IEnumerable<Work>>> GetAllWorks(int? itemsPerPage)
         {
             try
             {
                 var workList = await _unitOfWork.WorkRepository.GetAll();
+                int pageToShow = 1;
 
                 if (workList.Any())
                 {
@@ -53,7 +55,13 @@ namespace TP_INTEGRADOR.Controllers
                         });
                     }
 
-                    return ResponseFactory.CreateSuccessResponse(200, workDTOList);
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedWorks = Pagination_Helper.Paginate(workDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedWorks);
                 }
 
                 return ResponseFactory.CreateErrorResponse(404, "Works table empty");

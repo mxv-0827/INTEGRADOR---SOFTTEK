@@ -5,6 +5,7 @@ using TP_INTEGRADOR.DataAccess.Repositories;
 using TP_INTEGRADOR.DTOs.ProjectDTOs;
 using TP_INTEGRADOR.DTOs.UserDTOs;
 using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Helpers;
 using TP_INTEGRADOR.Infrastructure;
 using TP_INTEGRADOR.Services;
 
@@ -24,15 +25,16 @@ namespace TP_INTEGRADOR.Controllers
         }
 
         /// <summary>
-        /// Obtains all projects from DB.
+        /// Obtains all projects from DB based on the given number of 'itemsPerPage'.
         /// </summary>
         /// <returns>All projects whether they have been deactivated or not.</returns>
         [HttpGet("GetAllProjects")]
-        public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
+        public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects(int? itemsPerPage)
         {
             try
             {
                 var projectList = await _unitOfWork.ProjectRepository.GetAll();
+                int pageToShow = 1;
 
                 if (projectList.Any())
                 {
@@ -50,7 +52,13 @@ namespace TP_INTEGRADOR.Controllers
                         });
                     }
 
-                    return ResponseFactory.CreateSuccessResponse(200, projectDTOList);
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedProjects = Pagination_Helper.Paginate(projectDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedProjects);
                 }
 
                 return ResponseFactory.CreateErrorResponse(404, "Projects table empty");
@@ -64,16 +72,17 @@ namespace TP_INTEGRADOR.Controllers
 
 
         /// <summary>
-        /// Obtains all projects with the state that matches the one written.
+        /// Obtains all projects with the state that matches the one written. In addition, a pagination can be added.
         /// </summary>
         /// <param name="state"></param>
         /// <returns>Projects with the same state as the parameter.</returns>
-        [HttpGet("GetProjectsByState")]
-        public async Task<ActionResult> GetProjectsByState(int state)
+        [HttpGet("GetProjectsByState/{state}")]
+        public async Task<ActionResult> GetProjectsByState([FromRoute] int state, int? itemsPerPage)
         {
             try
             {
                 var projectsStateList = await _unitOfWork.ProjectRepository.GetAllStateProjects(state);
+                int pageToShow = 1;
 
                 if (projectsStateList.Any())
                 {
@@ -91,7 +100,13 @@ namespace TP_INTEGRADOR.Controllers
                         });
                     }
 
-                    return ResponseFactory.CreateSuccessResponse(200, projectDTOList);
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedProjects = Pagination_Helper.Paginate(projectDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedProjects);
                 }
 
                 return ResponseFactory.CreateErrorResponse(404, "Not projects found with the established state.");
