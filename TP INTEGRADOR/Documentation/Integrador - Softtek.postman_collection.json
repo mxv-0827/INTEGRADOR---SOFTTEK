@@ -1,0 +1,979 @@
+{
+	"info": {
+		"_postman_id": "b51830a6-56b9-40a1-bfc8-8bee43218753",
+		"name": "Integrador - Softtek",
+		"description": "_**DESCRIPCION DE CADA ENDPOINT**_\n\n**ACLARACION:** _Todas aquellas rutas que devuelvan mas de una entidad tienen la posibilidad de realizar un paginado, cuya cantidad de items por pagina puede ser definida por el usuario. En caso de no ingresar ningun valor, se tomara por defecto la cantidad total de items devueltos, teniendo asi una sola pagina con todos los items dentro._\n\n**USERS**\n\n**GetAll** => Devuelve todos los usuarios presentes en la base de datos, independientemente de si estan o no desactivados.\n\n**GetById** => Devuelve un usuario en particular segun el id establecido.\n\n**Add** => Agrega un nuevo usuario a la base de datos.\n\n**Update** => Modificar los campos de un usuario segun el id establecido.\n\n**SoftDelete** => Desactiva el usuario segun el id establecido modificando el campo LeavingDate por la fecha en la que se desactivo el usuario.\n\n**PROJECTS**\n\n**GetAll** => Devuelve todos los proyectos presentes en la base de datos, independientemente de si estan o no desactivados.\n\n**GetByState** => Devuelve todos los proyectos que coincidan con el numero de estado establecido como parametro.\n\n**GetById** => Devuelve un proyecto en particular segun el id establecido.\n\n**Add** => Agrega un nuevo proyecto a la base de datos.\n\n**Update** => Modificar los campos de un proyecto segun el id establecido.\n\n**SoftDelete** => Desactiva el proyecto segun el id establecido modificando el campo LeavingDate por la fecha en la que se desactivo el usuario.\n\n**SERVICES**\n\n**GetAll** => Devuelve todos los servicios presentes en la base de datos, independientemente de si estan o no desactivados.\n\n**GetActive** => Devuelve todos los servicios cuyo campo State este establecido en True.\n\n**GetById** => Devuelve un servicio en particular segun el id establecido.\n\n**Add** => Agrega un nuevo servicio a la base de datos.\n\n**Update** => Modificar los campos de un servicio segun el id establecido.\n\n**SoftDelete** => Desactiva el servicio segun el id establecido modificando el campo LeavingDate por la fecha en la que se desactivo el usuario.\n\n**WORKS**\n\n**GetAll** => Devuelve todos los trabajos presentes en la base de datos, independientemente de si estan o no desactivados.\n\n**GetById** => Devuelve un trabajo en particular segun el id establecido.\n\n**Add** => Agrega un nuevo trabajo a la base de datos.\n\n**Update** => Modificar los campos de un trabajo segun el id establecido.\n\n**SoftDelete** => Desactiva el trabajo segun el id establecido modificando el campo LeavingDate por la fecha en la que se desactivo el usuario.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29307282"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Users - GetAll",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/User/GetAllUsers?itemsPerPage",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"User",
+								"GetAllUsers"
+							],
+							"query": [
+								{
+									"key": "itemsPerPage",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users - GetById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/User/GetUserById/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"User",
+								"GetUserById",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users - Add",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"string\",\r\n  \"dni\": 0,\r\n  \"userRole\": 0,\r\n  \"password\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/User/AddUser",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"User",
+								"AddUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users - Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"string\",\r\n  \"password\": \"string\",\r\n  \"userRole\": 0,\r\n  \"leavingDate\": \"2023-09-24T20:39:35.550Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/User/UpdateUser/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"User",
+								"UpdateUser",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users - SoftDelete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/User/DeleteUser/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"User",
+								"DeleteUser",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Projects - GetAll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Project/GetAllProjects?itemsPerPage",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Project",
+								"GetAllProjects"
+							],
+							"query": [
+								{
+									"key": "itemsPerPage",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Projects - GetAllByState",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Project/GetProjectsByState/:state",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Project",
+								"GetProjectsByState",
+								":state"
+							],
+							"variable": [
+								{
+									"key": "state",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Projects - GetById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Project/GetProjectById/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Project",
+								"GetProjectById",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Projects - Add",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"string\",\r\n  \"direction\": \"string\",\r\n  \"state\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/Project/AddProject",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Project",
+								"AddProject"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Projects - Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"string\",\r\n  \"direction\": \"string\",\r\n  \"state\": 0,\r\n  \"leavingDate\": \"2023-09-24T21:04:19.035Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/Project/UpdateProject/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Project",
+								"UpdateProject",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Projects - SoftDelete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Project/DeleteProject/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Project",
+								"DeleteProject",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "Services - GetAll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Service/GetAllServices?itemsPerPage",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Service",
+								"GetAllServices"
+							],
+							"query": [
+								{
+									"key": "itemsPerPage",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Services - GetActive",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Service/GetActiveServices?itemsPerPage",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Service",
+								"GetActiveServices"
+							],
+							"query": [
+								{
+									"key": "itemsPerPage",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Services - GetById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Service/GetServiceById/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Service",
+								"GetServiceById",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Services - Add",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"string\",\r\n  \"state\": true,\r\n  \"hourValue\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/Service/AddService",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Service",
+								"AddService"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Services - Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"string\",\r\n  \"state\": true,\r\n  \"hourValue\": 0,\r\n  \"leavingDate\": \"2023-09-24T21:13:38.159Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/Service/UpdateService/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Service",
+								"UpdateService",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Services - SoftDelete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Service/DeleteService/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Service",
+								"DeleteService",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Works",
+			"item": [
+				{
+					"name": "Works - GetAll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Work/GetAllWorks?itemsPerPage=2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Work",
+								"GetAllWorks"
+							],
+							"query": [
+								{
+									"key": "itemsPerPage",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Works - GetById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Consultant}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Work/GetWorkById/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Work",
+								"GetWorkById",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Works - Add",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"date\": \"2023-09-24T21:17:58.509Z\",\r\n  \"codProject\": 0,\r\n  \"codService\": 0,\r\n  \"amountHours\": 0,\r\n  \"valuePerHour\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/Work/AddWork",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Work",
+								"AddWork"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Works - Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"date\": \"2023-09-24T21:19:03.164Z\",\r\n  \"codProject\": 0,\r\n  \"codService\": 0,\r\n  \"amountHours\": 0,\r\n  \"valuePerHour\": 0,\r\n  \"leavingDate\": \"2023-09-24T21:19:03.165Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7124/api/Work/UpdateWork/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Work",
+								"UpdateWork",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Works - SoftDelete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token_Administrator}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:7124/api/Work/DeleteWork/:id",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7124",
+							"path": [
+								"api",
+								"Work",
+								"DeleteWork",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1,\r\n  \"password\": \"admin1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7124/api/Login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7124",
+					"path": [
+						"api",
+						"Login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Token_Administrator",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ3ZWJBcGlTdWJqZWN0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIyIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiMiIsImV4cCI6MTY5NTcwODcxNH0._nzeeoR5KtWmW-1ik2xzAOSKHd57YLIWZx5auBcRSJg",
+			"type": "string"
+		},
+		{
+			"key": "Token_Consultant",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ3ZWJBcGlTdWJqZWN0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiMSIsImV4cCI6MTY5NTcwODY4OX0.VR6iDFXE7JkF5m0L5Wss_VmRhhcMz8bdA09ht4Qf9K4",
+			"type": "string"
+		}
+	]
+}
