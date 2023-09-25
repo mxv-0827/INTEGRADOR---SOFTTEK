@@ -1,8 +1,7 @@
-﻿namespace TP_INTEGRADOR.DTOs
+﻿namespace TP_INTEGRADOR.DTOs.UserDTOs
 {
-    public class UserDTO
+    public class UserAddDTO
     {
-        public int CodUser { get; set; }
         public string Name { get; set; }
         public int DNI { get; set; }
         public int UserRole { get; set; }

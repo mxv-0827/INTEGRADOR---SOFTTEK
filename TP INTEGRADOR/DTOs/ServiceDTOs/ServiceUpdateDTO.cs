@@ -1,10 +1,10 @@
-﻿namespace TP_INTEGRADOR.DTOs
+﻿namespace TP_INTEGRADOR.DTOs.ServiceDTOs
 {
-    public class ServiceDTO
+    public class ServiceUpdateDTO
     {
-        public int CodService { get; set; }
         public string Description { get; set; }
         public bool State { get; set; }
         public decimal HourValue { get; set; }
+        public DateTime? LeavingDate { get; set; }
     }
 }

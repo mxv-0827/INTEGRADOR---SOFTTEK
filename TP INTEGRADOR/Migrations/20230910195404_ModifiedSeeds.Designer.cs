@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TP_INTEGRADOR.DataAccess;
 
@@ -11,9 +12,10 @@ using TP_INTEGRADOR.DataAccess;
 namespace TP_INTEGRADOR.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230910195404_ModifiedSeeds")]
+    partial class ModifiedSeeds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,10 +37,6 @@ namespace TP_INTEGRADOR.Migrations
                         .IsRequired()
                         .HasColumnType("VARCHAR(30)")
                         .HasColumnName("Direction");
-
-                    b.Property<DateTime?>("LeavingDate")
-                        .HasColumnType("DATE")
-                        .HasColumnName("LeavingDate");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -84,41 +82,6 @@ namespace TP_INTEGRADOR.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TP_INTEGRADOR.Entities.Role", b =>
-                {
-                    b.Property<int>("CodRole")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CodRole");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CodRole"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(60)")
-                        .HasColumnName("Description");
-
-                    b.Property<DateTime?>("LeavingDate")
-                        .HasColumnType("DATE")
-                        .HasColumnName("LeavingDate");
-
-                    b.HasKey("CodRole");
-
-                    b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            CodRole = 1,
-                            Description = "Consultant"
-                        },
-                        new
-                        {
-                            CodRole = 2,
-                            Description = "Administrator"
-                        });
-                });
-
             modelBuilder.Entity("TP_INTEGRADOR.Entities.Service", b =>
                 {
                     b.Property<int>("CodService")
@@ -136,10 +99,6 @@ namespace TP_INTEGRADOR.Migrations
                     b.Property<decimal>("HourValue")
                         .HasColumnType("DECIMAL(18,0)")
                         .HasColumnName("HourValue");
-
-                    b.Property<DateTime?>("LeavingDate")
-                        .HasColumnType("DATE")
-                        .HasColumnName("LeavingDate");
 
                     b.Property<bool>("State")
                         .HasColumnType("bit")
@@ -194,10 +153,6 @@ namespace TP_INTEGRADOR.Migrations
                         .HasColumnType("int")
                         .HasColumnName("DNI");
 
-                    b.Property<DateTime?>("LeavingDate")
-                        .HasColumnType("DATE")
-                        .HasColumnName("LeavingDate");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("VARCHAR(60)")
@@ -205,7 +160,7 @@ namespace TP_INTEGRADOR.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(250)")
+                        .HasColumnType("VARCHAR(15)")
                         .HasColumnName("Password");
 
                     b.Property<int>("UserRole")
@@ -213,8 +168,6 @@ namespace TP_INTEGRADOR.Migrations
                         .HasColumnName("UserRole");
 
                     b.HasKey("CodUser");
-
-                    b.HasIndex("UserRole");
 
                     b.ToTable("Users");
 
@@ -224,7 +177,7 @@ namespace TP_INTEGRADOR.Migrations
                             CodUser = 1,
                             DNI = 12345678,
                             Name = "Maxi Viand",
-                            Password = "68b1fdd831e67a17b839e8d35bc0ab110b10914e9c602fef1776caa0ae4df9bb",
+                            Password = "admin1234",
                             UserRole = 1
                         },
                         new
@@ -232,7 +185,7 @@ namespace TP_INTEGRADOR.Migrations
                             CodUser = 2,
                             DNI = 13245678,
                             Name = "Cris Viand",
-                            Password = "fa43bbefe428b0942306a45056ab3b53ec69664b8164d87bed99446e007b0655",
+                            Password = "admin4321",
                             UserRole = 2
                         },
                         new
@@ -240,7 +193,7 @@ namespace TP_INTEGRADOR.Migrations
                             CodUser = 3,
                             DNI = 87654321,
                             Name = "Gerardo Viand",
-                            Password = "e39b73ba4331b0d9f7fc186acd9ca5397d90a0dc5e802a91c39330c8172e3714",
+                            Password = "admin2468",
                             UserRole = 1
                         },
                         new
@@ -248,7 +201,7 @@ namespace TP_INTEGRADOR.Migrations
                             CodUser = 4,
                             DNI = 67891234,
                             Name = "Adriana Neporadnyj",
-                            Password = "6fe6b6fb7bcf17346c519f86599d72422d9e9cbdbe04ebb33d13804b4ef2740f",
+                            Password = "admin1357",
                             UserRole = 2
                         });
                 });
@@ -282,19 +235,11 @@ namespace TP_INTEGRADOR.Migrations
                         .HasColumnType("DATE")
                         .HasColumnName("Date");
 
-                    b.Property<DateTime?>("LeavingDate")
-                        .HasColumnType("DATE")
-                        .HasColumnName("LeavingDate");
-
                     b.Property<decimal>("ValuePerHour")
                         .HasColumnType("DECIMAL(18,0)")
                         .HasColumnName("ValuePerHour");
 
                     b.HasKey("CodWork");
-
-                    b.HasIndex("CodProject");
-
-                    b.HasIndex("CodService");
 
                     b.ToTable("Works");
 
@@ -306,7 +251,7 @@ namespace TP_INTEGRADOR.Migrations
                             CodProject = 4,
                             CodService = 4,
                             Cost = 5m,
-                            Date = new DateTime(2023, 9, 16, 20, 27, 8, 888, DateTimeKind.Local).AddTicks(4450),
+                            Date = new DateTime(2023, 9, 10, 16, 54, 3, 48, DateTimeKind.Local).AddTicks(9796),
                             ValuePerHour = 5m
                         },
                         new
@@ -316,7 +261,7 @@ namespace TP_INTEGRADOR.Migrations
                             CodProject = 3,
                             CodService = 3,
                             Cost = 12m,
-                            Date = new DateTime(2023, 9, 16, 20, 27, 8, 888, DateTimeKind.Local).AddTicks(4472),
+                            Date = new DateTime(2023, 9, 10, 16, 54, 3, 48, DateTimeKind.Local).AddTicks(9827),
                             ValuePerHour = 6m
                         },
                         new
@@ -326,7 +271,7 @@ namespace TP_INTEGRADOR.Migrations
                             CodProject = 2,
                             CodService = 2,
                             Cost = 21m,
-                            Date = new DateTime(2023, 9, 16, 20, 27, 8, 888, DateTimeKind.Local).AddTicks(4474),
+                            Date = new DateTime(2023, 9, 10, 16, 54, 3, 48, DateTimeKind.Local).AddTicks(9832),
                             ValuePerHour = 7m
                         },
                         new
@@ -336,54 +281,9 @@ namespace TP_INTEGRADOR.Migrations
                             CodProject = 1,
                             CodService = 1,
                             Cost = 32m,
-                            Date = new DateTime(2023, 9, 16, 20, 27, 8, 888, DateTimeKind.Local).AddTicks(4475),
+                            Date = new DateTime(2023, 9, 10, 16, 54, 3, 48, DateTimeKind.Local).AddTicks(9836),
                             ValuePerHour = 8m
                         });
-                });
-
-            modelBuilder.Entity("TP_INTEGRADOR.Entities.User", b =>
-                {
-                    b.HasOne("TP_INTEGRADOR.Entities.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("UserRole")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("TP_INTEGRADOR.Entities.Work", b =>
-                {
-                    b.HasOne("TP_INTEGRADOR.Entities.Project", "Project")
-                        .WithMany("Works")
-                        .HasForeignKey("CodProject")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TP_INTEGRADOR.Entities.Service", "Service")
-                        .WithMany("Works")
-                        .HasForeignKey("CodService")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("TP_INTEGRADOR.Entities.Project", b =>
-                {
-                    b.Navigation("Works");
-                });
-
-            modelBuilder.Entity("TP_INTEGRADOR.Entities.Role", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("TP_INTEGRADOR.Entities.Service", b =>
-                {
-                    b.Navigation("Works");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,93 +1,247 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TP_INTEGRADOR.DataAccess.Repositories;
+using TP_INTEGRADOR.DTOs.ProjectDTOs;
+using TP_INTEGRADOR.DTOs.UserDTOs;
+using TP_INTEGRADOR.Entities;
+using TP_INTEGRADOR.Helpers;
+using TP_INTEGRADOR.Infrastructure;
+using TP_INTEGRADOR.Services;
 
 namespace TP_INTEGRADOR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectController : ControllerBase
     {
-        [HttpGet]
-        [Route("/getAllProjects")]
-        public IActionResult GetAllProjects()
+        private readonly IUnitOfWork _unitOfWork;
+
+
+        public ProjectController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        /// <summary>
+        /// Obtains all projects from DB based on the given number of 'itemsPerPage'.
+        /// </summary>
+        /// <returns>All projects whether they have been deactivated or not.</returns>
+        [HttpGet("GetAllProjects")]
+        public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects(int? itemsPerPage)
         {
             try
             {
-                return Ok("Proyectos obtenidos");
+                var projectList = await _unitOfWork.ProjectRepository.GetAll();
+                int pageToShow = 1;
+
+                if (projectList.Any())
+                {
+                    var projectDTOList = new List<ProjectGetDTO>();
+
+                    foreach (var proj in projectList)
+                    {
+                        projectDTOList.Add(new ProjectGetDTO
+                        {
+                            ID = proj.CodProject,
+                            Name = proj.Name,
+                            Direction = proj.Direction,
+                            State = proj.State,
+                            LeavingDate = proj.LeavingDate
+                        });
+                    }
+
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedProjects = Pagination_Helper.Paginate(projectDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedProjects);
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Projects table empty");
             }
-            catch
+
+            catch (Exception)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
 
-        [HttpGet]
-        [Route("/getProjectFilter")]
-        public IActionResult GetProjectsByState()
+
+        /// <summary>
+        /// Obtains all projects with the state that matches the one written. In addition, a pagination can be added.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns>Projects with the same state as the parameter.</returns>
+        [HttpGet("GetProjectsByState/{state}")]
+        public async Task<ActionResult> GetProjectsByState([FromRoute] int state, int? itemsPerPage)
         {
             try
             {
-                return Ok("Proyectos obtenidos");
+                var projectsStateList = await _unitOfWork.ProjectRepository.GetAllStateProjects(state);
+                int pageToShow = 1;
+
+                if (projectsStateList.Any())
+                {
+                    var projectDTOList = new List<ProjectGetDTO>();
+
+                    foreach (var proj in projectsStateList)
+                    {
+                        projectDTOList.Add(new ProjectGetDTO
+                        {
+                            ID = proj.CodProject,
+                            Name = proj.Name,
+                            Direction = proj.Direction,
+                            State = proj.State,
+                            LeavingDate = proj.LeavingDate
+                        });
+                    }
+
+                    if (Request.Query.ContainsKey("page")) int.TryParse(Request.Query["page"], out pageToShow);
+                    if (Request.Query.ContainsKey("itemsPerPage") && int.TryParse(Request.Query["itemsPerPage"], out var parsedItemsPerPage)) itemsPerPage = parsedItemsPerPage;
+
+                    var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
+                    var paginatedProjects = Pagination_Helper.Paginate(projectDTOList, itemsPerPage, pageToShow, url);
+
+                    return ResponseFactory.CreateSuccessResponse(200, paginatedProjects);
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Not projects found with the established state.");
             }
+
             catch
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
 
-        [HttpGet]
-        [Route("/getProject")]
-        public IActionResult GetProjectById()
+
+        /// <summary>
+        /// Obtains the project that matches with the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns the project with the same ID as the written one.</returns>
+        [HttpGet("GetProjectById/{id}")]
+        public async Task<ActionResult<Project>> GetProjectById([FromRoute] int id)
         {
             try
             {
-                return Ok("Proyecto obtenido");
+                var project = await _unitOfWork.ProjectRepository.GetById(id);
+
+                if (project != null) return ResponseFactory.CreateSuccessResponse(200, new ProjectGetDTO { ID = project.CodProject, Name = project.Name, Direction = project.Direction, State = project.State, LeavingDate = project.LeavingDate});
+
+                return ResponseFactory.CreateErrorResponse(404, "ID not found.");
             }
-            catch
+
+            catch (Exception)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
 
-        [HttpPost]
-        [Route("/addProject")]
-        public IActionResult AddProject() 
+
+        /// <summary>
+        /// Adds a new project to DB.
+        /// </summary>
+        /// <param name="projectToAdd">The project to add.</param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPost("AddProject")]
+        [Authorize(Policy = "Administrator")]
+        public async Task<ActionResult> AddProject(ProjectAddDTO projectToAdd) 
         {
+            Project project = new Project
+            {
+                Name = projectToAdd.Name,
+                Direction = projectToAdd.Direction,
+                State = projectToAdd.State
+            };
+
             try
             {
-                return Ok("Proyecto creado.");
+                bool status = await _unitOfWork.ProjectRepository.Insert(project);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Project added to DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Project not added to DB.");
             }
+
             catch
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
 
-        [HttpDelete]
-        [Route("/deleteProject")]
-        public IActionResult DeleteProject()
+
+        /// <summary>
+        /// Modifies a project based on the given ID.
+        /// </summary>
+        /// <param name="projectToUpdate">The new project's features.</param>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("UpdateProject/{id}")]
+        [Authorize(Policy = "Administrator")]
+        public async Task<ActionResult> UpdateProject(ProjectUpdateDTO projectToUpdate, [FromRoute] int id)
         {
+            Project project = new Project
+            {
+                Name = projectToUpdate.Name,
+                Direction = projectToUpdate.Direction,
+                State = projectToUpdate.State,
+                LeavingDate = projectToUpdate.LeavingDate
+            };
+
             try
             {
-                return Ok("Proyecto eliminado.");
+                bool status = await _unitOfWork.ProjectRepository.Update(project, id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Project successfully updated");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Project not updated.");
             }
-            catch
+
+            catch (Exception)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
 
-        [HttpPut]
-        [Route("/updateProject")]
-        public IActionResult UpdateProject()
+
+        /// <summary>
+        /// Deactivates a project based on the given ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>A message notifying if the process was successful or not.</returns>
+        [HttpPut("DeleteProject/{id}")] //Al ser borrado logico deja de ser 'httpDelete' para ser un 'httpPut'.
+        [Authorize(Policy = "Administrator")]
+        public async Task<ActionResult> DeleteProject([FromRoute] int id)
         {
             try
             {
-                return Ok("Proyecto modificado.");
+                bool status = await _unitOfWork.ProjectRepository.Delete(id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Project deleted from DB.");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Project not deleted.");
             }
-            catch
+
+            catch (Exception)
             {
-                return BadRequest("No se pudo realizar la peticion.");
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
             }
         }
     }

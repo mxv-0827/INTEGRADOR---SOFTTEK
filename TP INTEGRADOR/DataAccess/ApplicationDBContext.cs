@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP_INTEGRADOR.DataAccess.DBSeeders;
-using TP_INTEGRADOR.DataAccess.Interface;
 using TP_INTEGRADOR.Entities;
 
 namespace TP_INTEGRADOR.DataAccess
@@ -13,21 +12,16 @@ namespace TP_INTEGRADOR.DataAccess
         public DbSet<Project> Projects { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Work> Works { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var seeder = new List<IEntitySeeder> {
-                new UserSeeder(),
-                new ProjectSeeder(),
-                new ServiceSeeder(),
-                new WorkSeeder()
-            };
-
-            seeder.ForEach(seed => seed.SeedDB(modelBuilder));
-
-
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new RoleSeeder());
+            modelBuilder.ApplyConfiguration(new UserSeeder());
+            modelBuilder.ApplyConfiguration(new ProjectSeeder());
+            modelBuilder.ApplyConfiguration(new ServiceSeeder());
+            modelBuilder.ApplyConfiguration(new WorkSeeder());
         }
     }
 }
