@@ -77,7 +77,7 @@ namespace TP_INTEGRADOR.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>The user that matched with the ID.</returns>
-        [HttpGet("GetUser/{id}")]
+        [HttpGet("GetUserById/{id}")]
         public async Task<ActionResult<User>> GetUserById([FromRoute] int id)
         {
             try
