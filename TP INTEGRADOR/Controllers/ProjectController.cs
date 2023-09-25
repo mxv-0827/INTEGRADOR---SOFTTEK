@@ -185,7 +185,7 @@ namespace TP_INTEGRADOR.Controllers
         /// <param name="projectToUpdate">The new project's features.</param>
         /// <param name="id"></param>
         /// <returns>A message notifying if the process was successful or not.</returns>
-        [HttpPut("Updateproject/{id}")]
+        [HttpPut("UpdateProject/{id}")]
         [Authorize(Policy = "Administrator")]
         public async Task<ActionResult> UpdateProject(ProjectUpdateDTO projectToUpdate, [FromRoute] int id)
         {

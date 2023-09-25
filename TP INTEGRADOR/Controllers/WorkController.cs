@@ -187,17 +187,23 @@ namespace TP_INTEGRADOR.Controllers
         [Authorize(Policy = "Administrator")]
         public async Task<ActionResult> DeleteWork([FromRoute] int id)
         {
-            bool status = await _unitOfWork.WorkRepository.Delete(id);
-
-            if (status)
+            try
             {
-                await _unitOfWork.Save();
-                return Ok("Work successfully deleted.");
+                bool status = await _unitOfWork.WorkRepository.Delete(id);
+
+                if (status)
+                {
+                    await _unitOfWork.Save();
+                    return ResponseFactory.CreateSuccessResponse(200, "Work successfully deleted");
+                }
+
+                return ResponseFactory.CreateErrorResponse(404, "Work not deleted.");
             }
 
-            return BadRequest("Ooops! Something went wrong. Work not deleted");
+            catch (Exception)
+            {
+                return ResponseFactory.CreateErrorResponse(500, "Server error.");
+            }
         }
-
-        
     }
 }
